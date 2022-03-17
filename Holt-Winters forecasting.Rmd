@@ -1,0 +1,93 @@
+---
+title: "BAX 493A - Homework 1"
+author: "Asha Mairh, Kavish Hukmani, Keshore Suryanarayanan, Neon Zhang, Vinit Hasija"
+date: "1/27/2022"
+output: html_document
+---
+
+## Reading Libraries
+
+```{r}
+library("forecast")
+```
+
+## Reading CSV
+
+```{r}
+data_full<-read.csv("data_week.csv")
+str(data_full)
+```
+
+## Selecting data
+
+```{r}
+columns_selected <- c(10,11,12,13,14)
+```
+
+
+```{r}
+for (column in columns_selected)
+{
+  ## Part 1
+  print(names(data_full)[column])
+  data = data_full[,column]
+  
+  ##### Representing Data as Time Series Objects #####
+  data_ts = ts(data, frequency = 52, start = c(2015,1))
+  plot.ts(data_ts)									
+  
+  ## Part 2 
+  ##### Holt-Winters Filter  #####
+  
+  #1 - With seasonality and trend
+  out1 = HoltWinters(data_ts, beta = TRUE, gamma = TRUE) 			
+  plot(out1, ylab = )											
+  
+  #2 - with trend and w/o seasonality
+  out2 = HoltWinters(data_ts, beta = TRUE, gamma = FALSE) 				
+  plot(out2)											
+  
+  #3 - w/o trend but with seasonality 
+  out3 = HoltWinters(data_ts, beta = FALSE, gamma = TRUE) 				
+  plot(out3)											
+  
+  #4 - withtout trend and without seasonality
+  out4 = HoltWinters(data_ts, beta = FALSE, gamma = FALSE) 				
+  plot(out4)											
+  
+  
+  ## Part 3
+  
+  ##### Time Series Decomposition  #####
+  data_dec = decompose(data_ts) 
+  trend = data_dec$trend
+  seasonal = data_dec$seasonal
+  random = data_dec$random
+  plot.ts(cbind(data_ts,trend, seasonal, random))
+  
+  ##### Check Residuals
+  checkresiduals(out1)
+  
+  checkresiduals(out2)
+  
+  checkresiduals(out3)
+  
+  checkresiduals(out4)
+  
+  ## Part 4
+  ##### Out of Sample Forecasts
+  out1_forecast = forecast:::forecast.HoltWinters(out1, h = 26, level = c(68, 95))	 
+  plot(out1_forecast)
+  
+  out2_forecast = forecast:::forecast.HoltWinters(out2, h = 26, level = c(68, 95))	 
+  plot(out2_forecast)
+  
+  out3_forecast = forecast:::forecast.HoltWinters(out3, h = 26, level = c(68, 95))	 
+  plot(out3_forecast)
+  
+  out4_forecast = forecast:::forecast.HoltWinters(out4, h = 26, level = c(68, 95))	 
+  plot(out4_forecast)
+}
+```
+
+
